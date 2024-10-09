@@ -9,5 +9,19 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    <!-- VWO SmartCode -->
+    <script type='text/javascript'>
+      var _vwo_code = _vwo_code || (function(){
+        var account_id=971160,
+            settings_tolerance=2000,
+            library_tolerance=2500,
+            use_existing_jquery=false,
+            is_spa=1,
+            hide_element='body',
+            /* additional configurations can be added here */
+            f=false,d=document;return{use_existing_jquery:function(){return use_existing_jquery;}, library_tolerance:function(){return library_tolerance;},hide_element:function(){return hide_element;},finish:function(){if(f)return;f=true; var a=d.getElementById('_vis_opt_path_hides');if(a)a.parentNode.removeChild(a);}, finished:function(){return f;},load:function(a){var b=d.createElement('script');b.src=a;b.type='text/javascript';b.innerText; b.async=true;var c=d.getElementsByTagName('head')[0];c.appendChild(b);},init:function(){d.write('<style type="text/css">body{opacity:0 !important}</style><div id="_vis_opt_path_hides"></div>');this.load('https://dev.visualwebsiteoptimizer.com/j.php?a='+account_id+'&u='+encodeURIComponent(d.URL)+'&f='+(+new Date));return settings_tolerance;}}}());
+      _vwo_code.init();
+    </script>
+
   </body>
 </html>
