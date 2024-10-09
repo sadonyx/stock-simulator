@@ -44,3 +44,26 @@
 button {
   margin: 25px;
 }
+
+.sub-container {
+  display: flex;
+  flex-direction: row;
+}
+
+span {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sub-button {
+  width: 100px;
+}
+
+.thresh-input {
+  border-radius: 5px;
+  width: 90px;
+  height: 35px;
+  font-size: 16px;
+  text-align: center;
+}

@@ -5,10 +5,12 @@ function App() {
   const [socket, setSocket] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
   const [user, setUser] = useState('default');
-  const [aapl, setAapl] = useState();
-  const [msft, setMsft] = useState();
-  const [goog, setGoog] = useState();
-  const [amzn, setAmzn] = useState();
+  const [aapl, setAapl] = useState({active: false, price: 0});
+  const [msft, setMsft] = useState({active: false, price: 0});
+  const [goog, setGoog] = useState({active: false, price: 0});
+  const [amzn, setAmzn] = useState({active: false, price: 0});
+  const [thresholds, setThresholds] = useState({'AAPL': 227, 'MSFT': 435, 'GOOG': 164, 'AMZN': 190});
+  const [notification, setNotification] = useState({show: false, message: ''});
 
   useEffect(() => {
     const host = '146.190.150.209';
@@ -25,11 +27,13 @@ function App() {
       
       try {
         const stockUpdate = JSON.parse(event.data);
-        if (stockUpdate.symbol == 'AAPL') setAapl(stockUpdate.prices.open);
-        if (stockUpdate.symbol == 'MSFT') setMsft(stockUpdate.prices.open);
-        if (stockUpdate.symbol == 'GOOG') setGoog(stockUpdate.prices.open);
-        if (stockUpdate.symbol == 'AMZN') setAmzn(stockUpdate.prices.open);
+        if (stockUpdate.symbol == 'AAPL') setAapl((prevState) => ({...prevState, price: stockUpdate.prices.open}));
+        if (stockUpdate.symbol == 'MSFT') setMsft((prevState) => ({...prevState, price: stockUpdate.prices.open}));
+        if (stockUpdate.symbol == 'GOOG') setGoog((prevState) => ({...prevState, price: stockUpdate.prices.open}));
+        if (stockUpdate.symbol == 'AMZN') setAmzn((prevState) => ({...prevState, price: stockUpdate.prices.open}));
       } catch (error) {
+        setNotification({show: true, message: event.data})
+        console.log(error);
         console.log(event.data);
       }
     };
@@ -53,21 +57,62 @@ function App() {
       symbol: symbol,
       threshold: threshold,
     });
+    if (symbol == 'AAPL') setAapl((prevState) => ({...prevState, active: true}));
+    if (symbol == 'MSFT') setMsft((prevState) => ({...prevState, active: true}));
+    if (symbol == 'GOOG') setGoog((prevState) => ({...prevState, active: true}));
+    if (symbol == 'AMZN') setAmzn((prevState) => ({...prevState, active: true}));
     socket.send(subscriptionMessage);
     }
   }
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleThresholdChange(e);
+    }
+  }
+
+  const handleThresholdChange = (e) => {
+    const stockName = e.currentTarget.previousElementSibling.name;
+    const value = Number(e.currentTarget.previousElementSibling.value);
+    const subCopy = structuredClone(thresholds);
+    subCopy[stockName] = value;
+    setThresholds(subCopy);
+  }
+
   return (
     <div>
-      <button onClick={() => handleSubscription('AAPL', 227)} disabled={!isConnected}>AAPL</button>
-      <button onClick={() => handleSubscription('MSFT', 435)} disabled={!isConnected}>MSFT</button>
-      <button onClick={() => handleSubscription('GOOG', 164)} disabled={!isConnected}>GOOG</button>
-      <button onClick={() => handleSubscription('AMZN', 190)} disabled={!isConnected}>AMZN</button>
+      { notification.show &&
+        <span className='notification'>
+          {notification.message}
+        </span>
+      }
+      <div className='sub-container'>
+        <span>
+          <button className='sub-button' onClick={() => handleSubscription('AAPL', thresholds.AAPL)} disabled={!isConnected}>AAPL</button>
+          <input className='thresh-input' name='AAPL' defaultValue={thresholds.AAPL} onKeyDown={handleKeyDown}></input>
+          <button name='AAPL' onClick={handleThresholdChange}>Update</button>
+        </span>
+        <span>
+          <button className='sub-button' onClick={() => handleSubscription('MSFT', thresholds.MSFT)} disabled={!isConnected}>MSFT</button>
+          <input className='thresh-input' name='MSFT' defaultValue={thresholds.MSFT} onKeyDown={handleKeyDown}></input>
+          <button name='MSFT' onClick={handleThresholdChange}>Update</button>
+        </span>
+        <span>
+          <button className='sub-button' onClick={() => handleSubscription('GOOG', thresholds.GOOG)} disabled={!isConnected}>GOOG</button>
+          <input className='thresh-input' name='GOOG' defaultValue={thresholds.GOOG} onKeyDown={handleKeyDown}></input>
+          <button name='GOOG' onClick={handleThresholdChange}>Update</button>
+        </span>
+        <span>
+          <button className='sub-button'onClick={() => handleSubscription('AMZN', thresholds.AMZN)} disabled={!isConnected}>AMZN</button>
+          <input className='thresh-input' name='AMZN' defaultValue={thresholds.AMZN} onKeyDown={handleKeyDown}></input>
+          <button name='AMZN' onClick={handleThresholdChange}>Update</button>
+        </span>
+      </div>
       <div>
-        <p>AAPL: {aapl}</p>
-        <p>MSFT: {msft}</p>
-        <p>GOOG: {goog}</p>
-        <p>AMZN: {amzn}</p>
+        <p>AAPL: {aapl.price}</p>
+        <p>MSFT: {msft.price}</p>
+        <p>GOOG: {goog.price}</p>
+        <p>AMZN: {amzn.price}</p>
       </div>
     </div>
   )
