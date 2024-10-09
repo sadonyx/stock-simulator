@@ -11,7 +11,8 @@ function App() {
   const [amzn, setAmzn] = useState();
 
   useEffect(() => {
-    const ws = new WebSocket('ws://localhost:5001');
+    const host = '146.190.150.209';
+    const ws = new WebSocket(`ws://${host}:5001`);
 
     // send subscription request
     ws.onopen = () => {
