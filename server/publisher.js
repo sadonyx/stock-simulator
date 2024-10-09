@@ -59,6 +59,7 @@ const runDataStream = async(symbol) => {
       try {
         nc.flush();
         nc.close();
+        runDataStream(symbol);
       } catch (error) {
         console.log('Could not close NATS connection:', error);
       }
